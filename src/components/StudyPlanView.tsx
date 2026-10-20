@@ -61,13 +61,14 @@ export const StudyPlanView: React.FC<StudyPlanViewProps> = ({
   const [isExportModalOpen, setIsExportModalOpen] = useState<boolean>(false);
   const [copiedStatus, setCopiedStatus] = useState<boolean>(false);
   const [exportMeta, setExportMeta] = useState<ExportMetadata>({
-    schoolName: 'مدرسة الشهيد الثلايا الحديثة',
+    schoolName: 'مدرسة إشراق اليمن',
     governorate: 'أمانة العاصمة / صنعاء',
     directorate: 'مديرية السبعين',
-    teacherName: 'أ. أحمد محمد الحكيمي',
+    teacherName: 'أ. بايسكاي (BIOSKY30)',
+    teacherEmail: 'BIOSKY30@gmail.com',
     supervisorName: 'أ. عبدالله صالح القحطاني',
     principalName: 'أ. نبيل عبدالرحمن القدسي',
-    gradeTitle: activeGradeConfig ? activeGradeConfig.title : 'الصف السابع الأساسي - الجزء الأول',
+    gradeTitle: activeGradeConfig ? activeGradeConfig.title : 'الصف التاسع الأساسي - الجزء الثاني',
     semesterTitle: isSemester2 ? 'الفصل الدراسي الثاني' : 'الفصل الدراسي الأول',
     academicYear: '1447 - 1448هـ / 2025 - 2026م',
     fontFamily: 'Cairo',
@@ -825,12 +826,22 @@ export const StudyPlanView: React.FC<StudyPlanViewProps> = ({
             <div className="p-5 sm:p-6 space-y-4 max-h-[75vh] overflow-y-auto text-xs">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="font-bold text-slate-700 block mb-1">اسم المعلم:</label>
+                  <label className="font-bold text-slate-700 block mb-1">اسم المعلم / المعدّ:</label>
                   <input
                     type="text"
                     value={exportMeta.teacherName}
                     onChange={(e) => setExportMeta({ ...exportMeta, teacherName: e.target.value })}
                     className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-semibold"
+                  />
+                </div>
+
+                <div>
+                  <label className="font-bold text-slate-700 block mb-1">البريد الإلكتروني (المعدّ):</label>
+                  <input
+                    type="email"
+                    value={exportMeta.teacherEmail || 'BIOSKY30@gmail.com'}
+                    onChange={(e) => setExportMeta({ ...exportMeta, teacherEmail: e.target.value })}
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-semibold font-mono"
                   />
                 </div>
 

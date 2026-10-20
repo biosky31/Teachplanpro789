@@ -9,6 +9,7 @@ export interface ExportMetadata {
   governorate: string;
   directorate: string;
   teacherName: string;
+  teacherEmail?: string;
   supervisorName: string;
   principalName: string;
   gradeTitle: string;
@@ -102,7 +103,7 @@ export function generateWordDocumentHtml(
               وزارة التربية والتعليم والبحث العلمي<br/>
               مكتب التربية بمحافظة: <u>${meta.governorate || 'صنعاء'}</u><br/>
               مديرية: <u>${meta.directorate || 'السبعين'}</u><br/>
-              مدرسة: <u>${meta.schoolName || 'مدرسة الشهيد الثلايا الحديثة'}</u>
+              مدرسة: <u>${meta.schoolName || 'مدرسة إشراق اليمن'}</u>
             </td>
             <td style="width: 34%; text-align: center; vertical-align: middle;">
               <h2 style="margin: 0; color: ${theme.primary}; font-size: 16pt; font-family: '${font}', 'Amiri', 'Traditional Arabic', serif;">خطة توزيع المنهاج الدراسي للفصل الدراسي الأول</h2>
@@ -110,7 +111,7 @@ export function generateWordDocumentHtml(
               <p style="margin: 2px 0; color: #b45309; font-size: 10pt; font-weight: bold;">وفق التقويم المدرسي المعتمد للعام الدراسي ${meta.academicYear}</p>
             </td>
             <td style="width: 33%; text-align: left; vertical-align: top; font-size: 10pt; color: #334155;">
-              <strong>المعلم:</strong> ${meta.teacherName || 'أ. أحمد محمد الحكيمي'}<br/>
+              <strong>المعلم / المعد:</strong> ${meta.teacherName || 'أ. بايسكاي (BIOSKY30)'} ${meta.teacherEmail ? `(${meta.teacherEmail})` : ''}<br/>
               <strong>الموجه التربوي:</strong> ${meta.supervisorName || 'أ. عبدالله صالح'}<br/>
               <strong>مدير المدرسة:</strong> ${meta.principalName || 'أ. نبيل القدسي'}<br/>
               <strong>نظام الحصص:</strong> 6 حصص أسبوعياً (السبت-الأربعاء)<br/>

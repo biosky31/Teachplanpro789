@@ -14,7 +14,10 @@ import {
   Printer, 
   Lock, 
   Sparkles,
-  ChevronLeft
+  ChevronLeft,
+  Mail,
+  Award,
+  School
 } from 'lucide-react';
 import { MainTabType } from '../NavigationTabs';
 import { GradeConfig, GradeKey } from '../../types/curriculum';
@@ -226,6 +229,34 @@ export const MobileDrawer: React.FC<MobileDrawerProps> = ({
                 </button>
               );
             })}
+          </div>
+
+          {/* Section 3: Teacher & Intellectual Preparation Rights Card */}
+          <div className="bg-slate-800/90 rounded-2xl p-3 border border-amber-500/30 text-xs space-y-2 shadow-xs">
+            <div className="flex items-center justify-between text-amber-300 font-bold text-[11px]">
+              <span className="flex items-center gap-1.5">
+                <Award className="w-3.5 h-3.5 text-amber-400" />
+                <span>حقوق الإعداد والتطوير</span>
+              </span>
+              <span className="text-[10px] bg-amber-400/20 text-amber-300 px-2 py-0.5 rounded-full font-bold">
+                المعدّ المعتمد
+              </span>
+            </div>
+
+            <div className="space-y-1 pt-1">
+              <div className="text-white font-extrabold text-xs flex items-center justify-between">
+                <span>أ. بايسكاي (BIOSKY30)</span>
+                <span className="text-[10px] text-slate-400 font-normal">معلم لغة عربية</span>
+              </div>
+              <div className="text-[11px] text-emerald-300 flex items-center gap-1 font-semibold">
+                <School className="w-3 h-3 text-emerald-400 shrink-0" />
+                <span>مدرسة إشراق اليمن</span>
+              </div>
+              <div className="text-[10px] text-slate-300 flex items-center gap-1 font-mono pt-0.5">
+                <Mail className="w-3 h-3 text-amber-400 shrink-0" />
+                <span>BIOSKY30@gmail.com</span>
+              </div>
+            </div>
           </div>
         </div>
 

@@ -45,8 +45,15 @@ export const DailyPreparationModal: React.FC<DailyPreparationModalProps> = ({
   const [selectedUnitId, setSelectedUnitId] = useState<number>(defaultUnitId);
   const [selectedDay, setSelectedDay] = useState<string>('السبت');
   const [selectedPeriodNum, setSelectedPeriodNum] = useState<number>(initialPeriod);
-  const [teacherName, setTeacherName] = useState<string>('معلم اللغة العربية');
-  const [schoolName, setSchoolName] = useState<string>('مدرسة الشهيد للتعليم الأساسي');
+  const [teacherName, setTeacherName] = useState<string>(() => {
+    try { return localStorage.getItem('curriculum_teacher_name') || 'أ. بايسكاي (BIOSKY30)'; } catch { return 'أ. بايسكاي (BIOSKY30)'; }
+  });
+  const [teacherEmail, setTeacherEmail] = useState<string>(() => {
+    try { return localStorage.getItem('curriculum_teacher_email') || 'BIOSKY30@gmail.com'; } catch { return 'BIOSKY30@gmail.com'; }
+  });
+  const [schoolName, setSchoolName] = useState<string>(() => {
+    try { return localStorage.getItem('curriculum_school_name') || 'مدرسة إشراق اليمن'; } catch { return 'مدرسة إشراق اليمن'; }
+  });
   const [selectedGoalCode, setSelectedGoalCode] = useState<string>('7-QR-01');
   const [isCopied, setIsCopied] = useState<boolean>(false);
 
@@ -71,8 +78,9 @@ export const DailyPreparationModal: React.FC<DailyPreparationModalProps> = ({
   const handleCopy = () => {
     const textToCopy = `خطة التحضير اليومي النموذجي لمادة لغتي العربية
 المدرسة: ${schoolName}
-المعلم: ${teacherName}
-الصف: ${activeGradeConfig ? activeGradeConfig.title : 'الصف السابع الأساسي'}
+المعلم / المعدّ: ${teacherName}
+البريد الإلكتروني: ${teacherEmail}
+الصف: ${activeGradeConfig ? activeGradeConfig.title : 'الصف التاسع الأساسي'}
 الوحدة: ${unit.unitNumberArabic} - ${unit.title}
 التاريخ الهجري الرسمي: ${weekMapping.startDaySaturdayHijri} (الموافق: ${weekMapping.startDaySaturdayMiladi})
 الهدف الأساسي [${activeGoal.code}]: ${activeGoal.statement}
@@ -190,20 +198,29 @@ export const DailyPreparationModal: React.FC<DailyPreparationModalProps> = ({
 
           <div>
             <label className="block text-slate-500 font-bold mb-1">بيانات المعلم والمدرسة:</label>
-            <div className="flex items-center gap-1">
+            <div className="flex flex-col gap-1">
+              <div className="flex items-center gap-1">
+                <input
+                  type="text"
+                  value={teacherName}
+                  onChange={(e) => setTeacherName(e.target.value)}
+                  placeholder="اسم المعلم / المعدّ"
+                  className="w-1/2 bg-white border border-slate-300 px-2 py-1 rounded-lg text-xs"
+                />
+                <input
+                  type="text"
+                  value={schoolName}
+                  onChange={(e) => setSchoolName(e.target.value)}
+                  placeholder="اسم المدرسة"
+                  className="w-1/2 bg-white border border-slate-300 px-2 py-1 rounded-lg text-xs"
+                />
+              </div>
               <input
-                type="text"
-                value={teacherName}
-                onChange={(e) => setTeacherName(e.target.value)}
-                placeholder="اسم المعلم"
-                className="w-1/2 bg-white border border-slate-300 px-2 py-1.5 rounded-lg text-xs"
-              />
-              <input
-                type="text"
-                value={schoolName}
-                onChange={(e) => setSchoolName(e.target.value)}
-                placeholder="اسم المدرسة"
-                className="w-1/2 bg-white border border-slate-300 px-2 py-1.5 rounded-lg text-xs"
+                type="email"
+                value={teacherEmail}
+                onChange={(e) => setTeacherEmail(e.target.value)}
+                placeholder="البريد الإلكتروني (المعدّ)"
+                className="w-full bg-white border border-slate-300 px-2 py-1 rounded-lg text-xs font-mono"
               />
             </div>
           </div>
@@ -221,8 +238,8 @@ export const DailyPreparationModal: React.FC<DailyPreparationModalProps> = ({
             </h2>
             <div className="flex flex-wrap justify-between items-center text-xs text-slate-700 pt-2 px-2 font-semibold">
               <span>المدرسة: {schoolName}</span>
-              <span>الصف: السابع الأساسي (الجزء الأول)</span>
-              <span>المعلم: {teacherName}</span>
+              <span>الصف: {activeGradeConfig ? activeGradeConfig.title : 'الصف التاسع الأساسي'}</span>
+              <span>المعلم / المعدّ: {teacherName} (<span className="font-mono text-emerald-800">{teacherEmail}</span>)</span>
               <span className="text-emerald-800 font-bold">
                 تاريخ الأسبوع بالتقويم الوزاري: {weekMapping.startDaySaturdayHijri} ({weekMapping.startDaySaturdayMiladi})
               </span>

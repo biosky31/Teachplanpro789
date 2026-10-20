@@ -50,11 +50,47 @@ export const DailyPreparationView: React.FC<DailyPreparationViewProps> = ({
   const [selectedUnitId, setSelectedUnitId] = useState<number>(defaultUnitId);
   const [selectedDay, setSelectedDay] = useState<string>('السبت');
   const [selectedPeriodNum, setSelectedPeriodNum] = useState<number>(initialPeriod);
-  const [teacherName, setTeacherName] = useState<string>('معلم اللغة العربية');
-  const [schoolName, setSchoolName] = useState<string>('مدرسة الشهيد للتعليم الأساسي');
+  const [teacherName, setTeacherName] = useState<string>(() => {
+    try { return localStorage.getItem('curriculum_teacher_name') || 'أ. بايسكاي (BIOSKY30)'; } catch { return 'أ. بايسكاي (BIOSKY30)'; }
+  });
+  const [teacherEmail, setTeacherEmail] = useState<string>(() => {
+    try { return localStorage.getItem('curriculum_teacher_email') || 'BIOSKY30@gmail.com'; } catch { return 'BIOSKY30@gmail.com'; }
+  });
+  const [schoolName, setSchoolName] = useState<string>(() => {
+    try { return localStorage.getItem('curriculum_school_name') || 'مدرسة إشراق اليمن'; } catch { return 'مدرسة إشراق اليمن'; }
+  });
   const [selectedGoalCode, setSelectedGoalCode] = useState<string>('7-QR-01');
   const [isCopied, setIsCopied] = useState<boolean>(false);
   const [showSettingsBar, setShowSettingsBar] = useState<boolean>(false); // default collapsed for maximum reading space!
+  const [periodDuration, setPeriodDuration] = useState<40 | 35>(() => {
+    try {
+      const saved = localStorage.getItem('curriculum_period_duration');
+      return saved === '35' ? 35 : 40;
+    } catch {
+      return 40;
+    }
+  });
+
+  const handleUpdateTeacherName = (val: string) => {
+    setTeacherName(val);
+    try { localStorage.setItem('curriculum_teacher_name', val); } catch {}
+  };
+  const handleUpdateTeacherEmail = (val: string) => {
+    setTeacherEmail(val);
+    try { localStorage.setItem('curriculum_teacher_email', val); } catch {}
+  };
+  const handleUpdateSchoolName = (val: string) => {
+    setSchoolName(val);
+    try { localStorage.setItem('curriculum_school_name', val); } catch {}
+  };
+  const handleUpdatePeriodDuration = (dur: 40 | 35) => {
+    setPeriodDuration(dur);
+    try { localStorage.setItem('curriculum_period_duration', String(dur)); } catch {}
+  };
+
+  const timingBreakdown = periodDuration === 35 
+    ? { warmup: '4 دقائق', activity: '24 دقيقة', closure: '7 دقائق', total: '35 دقيقة', label: 'التوقيت الشتوي / الفترات (35 دقيقة)' }
+    : { warmup: '5 دقائق', activity: '27 دقيقة', closure: '8 دقائق', total: '40 دقيقة', label: 'الدوام المعتاد (40 دقيقة - أطول حصة)' };
 
   // Active unit and lessons
   const unit = data.find(u => u.id === selectedUnitId) || data[0];
@@ -124,7 +160,8 @@ export const DailyPreparationView: React.FC<DailyPreparationViewProps> = ({
   const handleCopy = () => {
     const textToCopy = `كراس التحضير اليومي النموذجي لمادة لغتي العربية
 المدرسة: ${schoolName}
-المعلم: ${teacherName}
+المعلم / المعدّ: ${teacherName}
+البريد الإلكتروني: ${teacherEmail}
 الصف: ${activeGradeConfig ? activeGradeConfig.title : 'الصف التاسع الأساسي'}
 الوحدة: ${unit.unitNumberArabic} - ${unit.title}
 الحصة: ${selectedDay} (حصة ${selectedPeriodNum}) - ${periodDetails.branch}
@@ -260,7 +297,7 @@ export const DailyPreparationView: React.FC<DailyPreparationViewProps> = ({
 
       {/* 2. Optional Collapsible Settings Drawer - Stays hidden when teacher wants pure reading */}
       {showSettingsBar && (
-        <div className="bg-slate-50 rounded-2xl p-4 border border-slate-200 shadow-inner grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs no-print animate-fadeIn">
+        <div className="bg-slate-50 rounded-2xl p-4 border border-slate-200 shadow-inner grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-2.5 text-xs no-print animate-fadeIn">
           <div>
             <label className="block text-slate-600 font-bold mb-1">الاستراتيجية التخصصية المعتمدة:</label>
             <select
@@ -277,13 +314,24 @@ export const DailyPreparationView: React.FC<DailyPreparationViewProps> = ({
           </div>
 
           <div>
-            <label className="block text-slate-600 font-bold mb-1">اسم المعلم / المعلمة:</label>
+            <label className="block text-slate-600 font-bold mb-1">اسم المعلم / المعدّ:</label>
             <input
               type="text"
               value={teacherName}
-              onChange={(e) => setTeacherName(e.target.value)}
+              onChange={(e) => handleUpdateTeacherName(e.target.value)}
               placeholder="اسم المعلم"
               className="w-full bg-white border border-slate-300 px-3 py-1.5 rounded-xl text-xs font-medium focus:ring-1 focus:ring-emerald-600 outline-none"
+            />
+          </div>
+
+          <div>
+            <label className="block text-slate-600 font-bold mb-1">البريد الإلكتروني (المعدّ):</label>
+            <input
+              type="email"
+              value={teacherEmail}
+              onChange={(e) => handleUpdateTeacherEmail(e.target.value)}
+              placeholder="البريد الإلكتروني"
+              className="w-full bg-white border border-slate-300 px-3 py-1.5 rounded-xl text-xs font-mono font-medium focus:ring-1 focus:ring-emerald-600 outline-none"
             />
           </div>
 
@@ -292,7 +340,7 @@ export const DailyPreparationView: React.FC<DailyPreparationViewProps> = ({
             <input
               type="text"
               value={schoolName}
-              onChange={(e) => setSchoolName(e.target.value)}
+              onChange={(e) => handleUpdateSchoolName(e.target.value)}
               placeholder="اسم المدرسة"
               className="w-full bg-white border border-slate-300 px-3 py-1.5 rounded-xl text-xs font-medium focus:ring-1 focus:ring-emerald-600 outline-none"
             />
@@ -323,6 +371,32 @@ export const DailyPreparationView: React.FC<DailyPreparationViewProps> = ({
               </select>
             </div>
           </div>
+
+          <div>
+            <label className="block text-slate-600 font-bold mb-1">زمن الحصة المعتمد:</label>
+            <div className="flex gap-1 bg-slate-200/70 p-1 rounded-xl">
+              <button
+                type="button"
+                onClick={() => handleUpdatePeriodDuration(40)}
+                className={`w-1/2 py-1 px-1 rounded-lg font-bold text-[11px] transition-all text-center ${
+                  periodDuration === 40 ? 'bg-emerald-700 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'
+                }`}
+                title="الدوام المعتاد الأطول (40 دقيقة)"
+              >
+                40 دقيقة
+              </button>
+              <button
+                type="button"
+                onClick={() => handleUpdatePeriodDuration(35)}
+                className={`w-1/2 py-1 px-1 rounded-lg font-bold text-[11px] transition-all text-center ${
+                  periodDuration === 35 ? 'bg-emerald-700 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'
+                }`}
+                title="الدوام الشتوي / الفترات (35 دقيقة)"
+              >
+                35 دقيقة
+              </button>
+            </div>
+          </div>
         </div>
       )}
 
@@ -343,11 +417,11 @@ export const DailyPreparationView: React.FC<DailyPreparationViewProps> = ({
             مقرر «لغتي العربية» • {activeGradeConfig ? activeGradeConfig.title : 'الصف التاسع الأساسي'} ({activeGradeConfig?.stageName || 'الشهادة الأساسية العامة'})
           </div>
 
-          {/* Teacher and Calendar Metadata Strip */}
+          {/* Teacher, School and Calendar Metadata Strip */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-3 text-xs text-slate-700 font-medium bg-slate-50 p-2.5 rounded-xl border border-slate-200 print:bg-white print:border-slate-300">
             <div><span className="text-slate-500 font-bold">المدرسة: </span>{schoolName}</div>
-            <div><span className="text-slate-500 font-bold">المعلم: </span>{teacherName}</div>
-            <div><span className="text-slate-500 font-bold">اليوم والحصة: </span>{selectedDay} (الحصة {selectedPeriodNum})</div>
+            <div><span className="text-slate-500 font-bold">المعلم / المعدّ: </span>{teacherName}</div>
+            <div><span className="text-slate-500 font-bold">البريد: </span><span className="font-mono text-emerald-800 text-[11px]">{teacherEmail}</span></div>
             <div className="text-emerald-800 font-bold">
               <span className="text-slate-500 font-normal">التقويم الوزاري: </span>
               {weekMapping.startDaySaturdayHijri}
@@ -374,7 +448,7 @@ export const DailyPreparationView: React.FC<DailyPreparationViewProps> = ({
 
             <div className="bg-white/10 backdrop-blur-xs px-4 py-3 rounded-xl border border-white/10 text-center shrink-0 print:border-slate-300 print:bg-slate-50">
               <span className="block text-[11px] text-amber-300 print:text-slate-600 font-bold">زمن الحصة</span>
-              <span className="text-lg font-black text-white print:text-black">45 دقيقة</span>
+              <span className="text-lg font-black text-white print:text-black">{timingBreakdown.total}</span>
             </div>
           </div>
         </div>
@@ -417,7 +491,7 @@ export const DailyPreparationView: React.FC<DailyPreparationViewProps> = ({
         <div className="space-y-4">
           <div className="flex items-center gap-2 text-slate-900 font-bold text-base border-b border-slate-200 pb-2">
             <Clock className="w-5 h-5 text-amber-600" />
-            <h4>خطوات تنفيذ الدرس وتوزيع زمن الحصة (45 دقيقة)</h4>
+            <h4>خطوات تنفيذ الدرس وتوزيع زمن الحصة ({timingBreakdown.total})</h4>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs sm:text-sm">
@@ -425,7 +499,7 @@ export const DailyPreparationView: React.FC<DailyPreparationViewProps> = ({
             <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-2">
               <div className="flex items-center justify-between text-xs font-bold text-amber-700">
                 <span>1. التهيئة الحافزة والمدخل</span>
-                <span className="bg-amber-100 px-2 py-0.5 rounded-full">5 دقائق</span>
+                <span className="bg-amber-100 px-2 py-0.5 rounded-full">{timingBreakdown.warmup}</span>
               </div>
               <p className="text-slate-700 leading-relaxed">
                 استثارة دافعية الطلاب بطرح سؤال استكشافي أو استحضار حدث يرتبط بموضوع الدرس («{unit.title}»)، وتذكيرهم بأهمية استشعار أهداف الحصة في سلوكهم اليومي.
@@ -436,7 +510,7 @@ export const DailyPreparationView: React.FC<DailyPreparationViewProps> = ({
             <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-2">
               <div className="flex items-center justify-between text-xs font-bold text-emerald-700">
                 <span>2. العرض والنشاط التفاعلي</span>
-                <span className="bg-emerald-100 px-2 py-0.5 rounded-full">30 دقيقة</span>
+                <span className="bg-emerald-100 px-2 py-0.5 rounded-full">{timingBreakdown.activity}</span>
               </div>
               <p className="text-slate-700 leading-relaxed">
                 تطبيق استراتيجية ({activeGoal.strategy})، وتكليف الطلاب بقراءة الشواهد، واستخراج القواعد أو المفردات في مجموعات عمل تعاونية ومناقشة الحلول على السبورة.
@@ -447,7 +521,7 @@ export const DailyPreparationView: React.FC<DailyPreparationViewProps> = ({
             <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-2">
               <div className="flex items-center justify-between text-xs font-bold text-teal-700">
                 <span>3. الغلق والتقويم الختامي</span>
-                <span className="bg-teal-100 px-2 py-0.5 rounded-full">10 دقائق</span>
+                <span className="bg-teal-100 px-2 py-0.5 rounded-full">{timingBreakdown.closure}</span>
               </div>
               <p className="text-slate-700 leading-relaxed">
                 طرح أسئلة تقويمية سريعة لقياس مدى تحقق الأهداف، وتلخيص الأفكار المركزية وتوجيه الطلاب للواجب المنزلي بالكتاب المدرسي.
