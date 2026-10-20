@@ -64,7 +64,7 @@ export const StudyPlanView: React.FC<StudyPlanViewProps> = ({
     schoolName: 'مدرسة إشراق اليمن',
     governorate: 'أمانة العاصمة / صنعاء',
     directorate: 'مديرية السبعين',
-    teacherName: 'أ. بايسكاي (BIOSKY30)',
+    teacherName: 'الأستاذ إبراهيم متاش',
     teacherEmail: 'BIOSKY30@gmail.com',
     supervisorName: 'أ. عبدالله صالح القحطاني',
     principalName: 'أ. نبيل عبدالرحمن القدسي',

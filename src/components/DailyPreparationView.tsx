@@ -51,7 +51,15 @@ export const DailyPreparationView: React.FC<DailyPreparationViewProps> = ({
   const [selectedDay, setSelectedDay] = useState<string>('السبت');
   const [selectedPeriodNum, setSelectedPeriodNum] = useState<number>(initialPeriod);
   const [teacherName, setTeacherName] = useState<string>(() => {
-    try { return localStorage.getItem('curriculum_teacher_name') || 'أ. بايسكاي (BIOSKY30)'; } catch { return 'أ. بايسكاي (BIOSKY30)'; }
+    try {
+      const saved = localStorage.getItem('curriculum_teacher_name');
+      if (saved && saved !== 'أ. بايسكاي (BIOSKY30)' && saved !== 'معلم اللغة العربية') {
+        return saved;
+      }
+      return 'الأستاذ إبراهيم متاش';
+    } catch {
+      return 'الأستاذ إبراهيم متاش';
+    }
   });
   const [teacherEmail, setTeacherEmail] = useState<string>(() => {
     try { return localStorage.getItem('curriculum_teacher_email') || 'BIOSKY30@gmail.com'; } catch { return 'BIOSKY30@gmail.com'; }
@@ -627,6 +635,15 @@ export const DailyPreparationView: React.FC<DailyPreparationViewProps> = ({
           <div>توقيع وختم مدير المدرسة: .......................................</div>
         </div>
 
+        {/* Attribution & Rights strip */}
+        <div className="pt-3 text-center text-[11px] text-slate-500 font-medium flex flex-wrap items-center justify-center gap-2 border-t border-slate-100 no-print">
+          <span className="text-amber-600 font-bold">حقوق الإعداد التربوي:</span>
+          <span className="font-bold text-slate-800">إعداد: {teacherName}</span>
+          <span>•</span>
+          <span className="font-mono text-emerald-700">{teacherEmail}</span>
+          <span>•</span>
+          <span>{schoolName}</span>
+        </div>
       </div>
     </div>
   );

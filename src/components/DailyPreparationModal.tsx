@@ -46,7 +46,15 @@ export const DailyPreparationModal: React.FC<DailyPreparationModalProps> = ({
   const [selectedDay, setSelectedDay] = useState<string>('السبت');
   const [selectedPeriodNum, setSelectedPeriodNum] = useState<number>(initialPeriod);
   const [teacherName, setTeacherName] = useState<string>(() => {
-    try { return localStorage.getItem('curriculum_teacher_name') || 'أ. بايسكاي (BIOSKY30)'; } catch { return 'أ. بايسكاي (BIOSKY30)'; }
+    try {
+      const saved = localStorage.getItem('curriculum_teacher_name');
+      if (saved && saved !== 'أ. بايسكاي (BIOSKY30)' && saved !== 'معلم اللغة العربية') {
+        return saved;
+      }
+      return 'الأستاذ إبراهيم متاش';
+    } catch {
+      return 'الأستاذ إبراهيم متاش';
+    }
   });
   const [teacherEmail, setTeacherEmail] = useState<string>(() => {
     try { return localStorage.getItem('curriculum_teacher_email') || 'BIOSKY30@gmail.com'; } catch { return 'BIOSKY30@gmail.com'; }
@@ -56,6 +64,23 @@ export const DailyPreparationModal: React.FC<DailyPreparationModalProps> = ({
   });
   const [selectedGoalCode, setSelectedGoalCode] = useState<string>('7-QR-01');
   const [isCopied, setIsCopied] = useState<boolean>(false);
+  const [periodDuration, setPeriodDuration] = useState<40 | 35>(() => {
+    try {
+      const saved = localStorage.getItem('curriculum_period_duration');
+      return saved === '35' ? 35 : 40;
+    } catch {
+      return 40;
+    }
+  });
+
+  const handleUpdatePeriodDuration = (dur: 40 | 35) => {
+    setPeriodDuration(dur);
+    try { localStorage.setItem('curriculum_period_duration', String(dur)); } catch {}
+  };
+
+  const timingBreakdown = periodDuration === 35 
+    ? { warmup: '4 دقائق', activity: '24 دقيقة', closure: '7 دقائق', total: '35 دقيقة', label: 'التوقيت الشتوي / الفترات (35 دقيقة)' }
+    : { warmup: '5 دقائق', activity: '27 دقيقة', closure: '8 دقائق', total: '40 دقيقة', label: 'الدوام المعتاد (40 دقيقة - أطول حصة)' };
 
   const unit = data.find(u => u.id === selectedUnitId) || data[0];
   const readingLesson = unit.lessons.find(l => l.branch === 'texts' || l.branch === 'reading');
@@ -139,7 +164,7 @@ export const DailyPreparationModal: React.FC<DailyPreparationModalProps> = ({
         </div>
 
         {/* Modal Controls Strip - Sleek and compact */}
-        <div className="bg-slate-50 px-4 py-2.5 border-b border-slate-200 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 text-xs shrink-0 no-print">
+        <div className="bg-slate-50 px-4 py-2.5 border-b border-slate-200 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2.5 text-xs shrink-0 no-print">
           <div>
             <label className="block text-slate-500 font-bold mb-0.5">الوحدة المقررة:</label>
             <select
@@ -182,7 +207,37 @@ export const DailyPreparationModal: React.FC<DailyPreparationModalProps> = ({
           </div>
 
           <div>
-            <label className="block text-slate-500 font-bold mb-1">الهدف والاستراتيجية المعتمدة:</label>
+            <label className="block text-slate-500 font-bold mb-1">زمن الحصة الوزاري:</label>
+            <div className="flex items-center gap-1 bg-white p-0.5 rounded-xl border border-slate-300">
+              <button
+                type="button"
+                onClick={() => handleUpdatePeriodDuration(40)}
+                className={`flex-1 py-1 rounded-lg font-bold text-xs transition-all ${
+                  periodDuration === 40 
+                    ? 'bg-emerald-700 text-white shadow-xs' 
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+                title="الدوام المعتاد - أطول حصة (40 دقيقة)"
+              >
+                40 دقيقة
+              </button>
+              <button
+                type="button"
+                onClick={() => handleUpdatePeriodDuration(35)}
+                className={`flex-1 py-1 rounded-lg font-bold text-xs transition-all ${
+                  periodDuration === 35 
+                    ? 'bg-emerald-700 text-white shadow-xs' 
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+                title="الدوام الشتوي / الفترات (35 دقيقة)"
+              >
+                35 دقيقة
+              </button>
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-slate-500 font-bold mb-1">الهدف والاستراتيجية:</label>
             <select
               value={selectedGoalCode}
               onChange={(e) => setSelectedGoalCode(e.target.value)}
@@ -197,21 +252,21 @@ export const DailyPreparationModal: React.FC<DailyPreparationModalProps> = ({
           </div>
 
           <div>
-            <label className="block text-slate-500 font-bold mb-1">بيانات المعلم والمدرسة:</label>
+            <label className="block text-slate-500 font-bold mb-1">المعلم والمدرسة:</label>
             <div className="flex flex-col gap-1">
               <div className="flex items-center gap-1">
                 <input
                   type="text"
                   value={teacherName}
                   onChange={(e) => setTeacherName(e.target.value)}
-                  placeholder="اسم المعلم / المعدّ"
+                  placeholder="اسم المعلم"
                   className="w-1/2 bg-white border border-slate-300 px-2 py-1 rounded-lg text-xs"
                 />
                 <input
                   type="text"
                   value={schoolName}
                   onChange={(e) => setSchoolName(e.target.value)}
-                  placeholder="اسم المدرسة"
+                  placeholder="المدرسة"
                   className="w-1/2 bg-white border border-slate-300 px-2 py-1 rounded-lg text-xs"
                 />
               </div>
@@ -219,7 +274,7 @@ export const DailyPreparationModal: React.FC<DailyPreparationModalProps> = ({
                 type="email"
                 value={teacherEmail}
                 onChange={(e) => setTeacherEmail(e.target.value)}
-                placeholder="البريد الإلكتروني (المعدّ)"
+                placeholder="البريد الإلكتروني"
                 className="w-full bg-white border border-slate-300 px-2 py-1 rounded-lg text-xs font-mono"
               />
             </div>
@@ -236,10 +291,13 @@ export const DailyPreparationModal: React.FC<DailyPreparationModalProps> = ({
             <h2 className="text-xl font-extrabold text-slate-900 font-amiri">
               كراس التحضير اليومي النموذجي لمادة لغتي العربية
             </h2>
-            <div className="flex flex-wrap justify-between items-center text-xs text-slate-700 pt-2 px-2 font-semibold">
+            <div className="flex flex-wrap justify-between items-center text-xs text-slate-700 pt-2 px-2 font-semibold gap-2">
               <span>المدرسة: {schoolName}</span>
               <span>الصف: {activeGradeConfig ? activeGradeConfig.title : 'الصف التاسع الأساسي'}</span>
               <span>المعلم / المعدّ: {teacherName} (<span className="font-mono text-emerald-800">{teacherEmail}</span>)</span>
+              <span className="bg-amber-100 text-amber-900 px-2.5 py-0.5 rounded-full font-bold">
+                زمن الحصة: {timingBreakdown.total}
+              </span>
               <span className="text-emerald-800 font-bold">
                 تاريخ الأسبوع بالتقويم الوزاري: {weekMapping.startDaySaturdayHijri} ({weekMapping.startDaySaturdayMiladi})
               </span>
@@ -284,7 +342,7 @@ export const DailyPreparationModal: React.FC<DailyPreparationModalProps> = ({
                 {unit.theme}
               </p>
               <div className="bg-white p-3 rounded-xl border border-slate-200">
-                <strong className="text-emerald-900 block mb-1">التهيئة الحافزة المقترحة (5 دقائق):</strong>
+                <strong className="text-emerald-900 block mb-1">التهيئة الحافزة المقترحة ({timingBreakdown.warmup}):</strong>
                 <p className="leading-relaxed">
                   طرح سؤال مثير للتفكير مرتبط بالواقع الإيماني والوطني، واستدعاء خبرات الطلاب السابقة، وعرض الشاهد المحوري من الكتاب المدرسي لإثارة الفضول العلمي وربط المتعلم بهويته ولغته.
                 </p>
@@ -381,7 +439,7 @@ export const DailyPreparationModal: React.FC<DailyPreparationModalProps> = ({
           {/* Section 4: Classroom Procedure Steps */}
           <div className="border border-slate-200 rounded-2xl p-4 bg-white space-y-3 text-xs">
             <h4 className="font-bold text-slate-900 text-sm border-b border-slate-200 pb-2">
-              خامساً: سير التدريس وإجراءات الأنشطة الصفية (30 دقيقة)
+              خامساً: سير التدريس وإجراءات الأنشطة الصفية ({timingBreakdown.activity})
             </h4>
             <div className="space-y-2 text-slate-700 leading-relaxed">
               <p>
@@ -402,10 +460,10 @@ export const DailyPreparationModal: React.FC<DailyPreparationModalProps> = ({
           {/* Section 5: Evaluation & Homework */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
             <div className="border border-slate-200 rounded-2xl p-4 bg-emerald-50/40 space-y-2">
-              <span className="font-bold text-emerald-950 block text-sm">سادساً: أساليب التقويم:</span>
+              <span className="font-bold text-emerald-950 block text-sm">سادساً: أساليب التقويم والغلق ({timingBreakdown.closure}):</span>
               <ul className="space-y-1 text-slate-800 pr-2">
                 <li>• <strong>تقويم تكويني: </strong> أسئلة شفهية وتغذية راجعة فورية أثناء تطبيق الاستراتيجية.</li>
-                <li>• <strong>تقويم ختامي: </strong> حل مسألة أو إعراب جملة أو استخراج ظاهرة من تقويم الوحدة ص {unit.pageRange[1]}.</li>
+                <li>• <strong>تقويم ختامي وغلق ({timingBreakdown.closure}): </strong> حل مسألة أو إعراب جملة أو استخراج ظاهرة من تقويم الوحدة ص {unit.pageRange[1]} وتلخيص المفهوم المركزي.</li>
               </ul>
             </div>
 

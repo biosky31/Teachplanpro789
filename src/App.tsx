@@ -169,14 +169,10 @@ export default function App() {
       <MobileBottomNav
         activeTab={activeTab}
         onSelectTab={(tab) => {
-          if (tab === 'daily_prep') {
-            handleOpenPreparationModal(selectedUnitId);
-          } else {
-            setActiveTab(tab);
-          }
+          setActiveTab(tab);
         }}
         onOpenDrawer={() => setIsDrawerOpen(true)}
-        onOpenPrepModal={() => handleOpenPreparationModal(selectedUnitId)}
+        onOpenPrepModal={() => setActiveTab('daily_prep')}
       />
 
       {/* 7. Daily Preparation Bottom-Sheet Modal */}

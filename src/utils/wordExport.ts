@@ -111,7 +111,7 @@ export function generateWordDocumentHtml(
               <p style="margin: 2px 0; color: #b45309; font-size: 10pt; font-weight: bold;">وفق التقويم المدرسي المعتمد للعام الدراسي ${meta.academicYear}</p>
             </td>
             <td style="width: 33%; text-align: left; vertical-align: top; font-size: 10pt; color: #334155;">
-              <strong>المعلم / المعد:</strong> ${meta.teacherName || 'أ. بايسكاي (BIOSKY30)'} ${meta.teacherEmail ? `(${meta.teacherEmail})` : ''}<br/>
+              <strong>المعلم / المعد:</strong> ${meta.teacherName || 'الأستاذ إبراهيم متاش'} ${meta.teacherEmail ? `(${meta.teacherEmail})` : ''}<br/>
               <strong>الموجه التربوي:</strong> ${meta.supervisorName || 'أ. عبدالله صالح'}<br/>
               <strong>مدير المدرسة:</strong> ${meta.principalName || 'أ. نبيل القدسي'}<br/>
               <strong>نظام الحصص:</strong> 6 حصص أسبوعياً (السبت-الأربعاء)<br/>

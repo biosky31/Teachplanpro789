@@ -245,7 +245,7 @@ export const MobileDrawer: React.FC<MobileDrawerProps> = ({
 
             <div className="space-y-1 pt-1">
               <div className="text-white font-extrabold text-xs flex items-center justify-between">
-                <span>أ. بايسكاي (BIOSKY30)</span>
+                <span>الأستاذ إبراهيم متاش</span>
                 <span className="text-[10px] text-slate-400 font-normal">معلم لغة عربية</span>
               </div>
               <div className="text-[11px] text-emerald-300 flex items-center gap-1 font-semibold">
