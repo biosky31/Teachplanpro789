@@ -1,0 +1,71 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    font-family: 'Cairo', system-ui, -apple-system, sans-serif;
+  }
+}
+
+.font-amiri {
+  font-family: 'Amiri', serif;
+}
+
+/* Custom scrollbar for dense curriculum view */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+@media print {
+  @page {
+    size: A4 landscape;
+    margin: 8mm 6mm 8mm 6mm;
+  }
+  
+  html, body {
+    background: #ffffff !important;
+    color: #000000 !important;
+    font-size: 10pt;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  .print-only {
+    display: block !important;
+  }
+
+  .print-break-after-page,
+  .print\:break-after-page {
+    page-break-after: always !important;
+    break-after: page !important;
+  }
+
+  table {
+    page-break-inside: auto;
+  }
+
+  tr {
+    page-break-inside: avoid;
+    page-break-after: auto;
+  }
+
+  thead {
+    display: table-header-group;
+  }
+
+  tfoot {
+    display: table-footer-group;
+  }
+}
