@@ -2,6 +2,7 @@ import React from 'react';
 import { Menu, BookOpen, Printer, ChevronDown, CheckCircle2, ShieldCheck, GraduationCap } from 'lucide-react';
 import { GradeConfig, GradeKey } from '../../types/curriculum';
 import { GRADES_CONFIG } from '../../data/gradesRegistry';
+import { PWAInstallButton } from './PWAInstallButton';
 
 interface MobileTopBarProps {
   onOpenDrawer: () => void;
@@ -83,6 +84,9 @@ export const MobileTopBar: React.FC<MobileTopBarProps> = ({
 
         {/* Left side: Quick Actions */}
         <div className="flex items-center gap-2 shrink-0">
+          {/* PWA Install Button */}
+          <PWAInstallButton variant="compact" />
+
           {/* Isolation status indicator */}
           <div className="hidden lg:flex items-center gap-1 bg-emerald-950/70 border border-emerald-700/60 px-2 py-1 rounded-lg text-[10px] text-emerald-300 font-medium">
             <ShieldCheck className="w-3 h-3 text-emerald-400" />
@@ -95,7 +99,7 @@ export const MobileTopBar: React.FC<MobileTopBarProps> = ({
             title="الانتقال المباشر لكراس التحضير اليومي"
           >
             <BookOpen className="w-3.5 h-3.5" />
-            <span>كراس التحضير</span>
+            <span className="hidden xs:inline">كراس التحضير</span>
           </button>
 
           <button

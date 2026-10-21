@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#064e3b" />
+      <stop offset="50%" stop-color="#065f46" />
+      <stop offset="100%" stop-color="#022c22" />
+    </linearGradient>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fef08a" />
+      <stop offset="50%" stop-color="#f59e0b" />
+      <stop offset="100%" stop-color="#b45309" />
+    </linearGradient>
+    <linearGradient id="pageGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="100%" stop-color="#f1f5f9" />
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000000" flood-opacity="0.35" />
+    </filter>
+  </defs>
+
+  <!-- Background Base -->
+  <rect width="512" height="512" rx="104" fill="url(#bgGrad)" />
+
+  <!-- Outer Decorative Ring -->
+  <circle cx="256" cy="256" r="216" fill="none" stroke="url(#goldGrad)" stroke-width="4" stroke-opacity="0.4" stroke-dasharray="10 8" />
+
+  <!-- Open Book Emblem -->
+  <g filter="url(#shadow)" transform="translate(0, 10)">
+    <!-- Book Left Page -->
+    <path d="M 256 360 C 210 320 130 320 90 330 C 80 332 72 324 72 314 L 72 160 C 72 152 78 145 86 143 C 130 133 210 135 256 175 Z" fill="url(#pageGrad)" />
+    
+    <!-- Book Right Page -->
+    <path d="M 256 360 C 302 320 382 320 422 330 C 432 332 440 324 440 314 L 440 160 C 440 152 434 145 426 143 C 382 133 302 135 256 175 Z" fill="url(#pageGrad)" />
+
+    <!-- Spine Divider -->
+    <path d="M 256 175 L 256 365" stroke="#cbd5e1" stroke-width="3" stroke-linecap="round" />
+
+    <!-- Text Lines Left Page -->
+    <line x1="110" y1="185" x2="225" y2="185" stroke="#94a3b8" stroke-width="4" stroke-linecap="round" />
+    <line x1="110" y1="215" x2="215" y2="215" stroke="#94a3b8" stroke-width="4" stroke-linecap="round" />
+    <line x1="110" y1="245" x2="230" y2="245" stroke="#94a3b8" stroke-width="4" stroke-linecap="round" />
+    <line x1="110" y1="275" x2="195" y2="275" stroke="#94a3b8" stroke-width="4" stroke-linecap="round" />
+
+    <!-- Text Lines Right Page -->
+    <line x1="285" y1="185" x2="400" y2="185" stroke="#94a3b8" stroke-width="4" stroke-linecap="round" />
+    <line x1="295" y1="215" x2="400" y2="215" stroke="#94a3b8" stroke-width="4" stroke-linecap="round" />
+    <line x1="285" y1="245" x2="400" y2="245" stroke="#94a3b8" stroke-width="4" stroke-linecap="round" />
+    <line x1="315" y1="275" x2="400" y2="275" stroke="#94a3b8" stroke-width="4" stroke-linecap="round" />
+
+    <!-- Golden Feather Quill / Pen -->
+    <g transform="translate(256, 170) rotate(-35) translate(-256, -170)">
+      <path d="M 256 110 C 275 140 280 195 264 260 L 256 280 L 248 260 C 232 195 237 140 256 110 Z" fill="url(#goldGrad)" />
+      <line x1="256" y1="115" x2="256" y2="275" stroke="#78350f" stroke-width="2" />
+      <polygon points="252,275 260,275 256,290" fill="#78350f" />
+    </g>
+
+    <!-- Star Emblem on top -->
+    <circle cx="256" cy="118" r="7" fill="#fbbf24" />
+  </g>
+
+  <!-- Yemeni Badge Ribbon Bottom -->
+  <g transform="translate(136, 400)">
+    <rect width="240" height="42" rx="21" fill="#0f172a" stroke="url(#goldGrad)" stroke-width="2" />
+    <text x="120" y="27" font-family="'Cairo', 'Traditional Arabic', sans-serif" font-size="20" font-weight="bold" fill="#f8fafc" text-anchor="middle">
+      لغتي العربية
+    </text>
+  </g>
+</svg>

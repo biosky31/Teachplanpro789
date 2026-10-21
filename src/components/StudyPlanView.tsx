@@ -176,10 +176,41 @@ export const StudyPlanView: React.FC<StudyPlanViewProps> = ({
     setIsExportModalOpen(false);
   };
 
-  // Handle Copy as Plain Text / TSV for Excel
-  const handleCopyTable = () => {
-    const header = ['الأسبوع', 'التاريخ الهجري والميلادي', 'الوحدة والدروس المقررة', 'الأهداف السلوكية (أن + الفعل)', 'الاستراتيجيات', 'الوسائل ومصادر التعلم', 'أساليب التقويم', 'الملاحظات'].join('\t');
-    const body = fullPlanRows.map(r => [
+  // Handle Copy as Rich Table for Word & TSV for Excel
+  const handleCopyTable = async () => {
+    const tableHtml = `
+      <table border="1" dir="rtl" style="border-collapse: collapse; font-family: Cairo, Tahoma, Arial, sans-serif; font-size: 10pt; width: 100%;">
+        <thead>
+          <tr style="background-color: #065f46; color: #ffffff; font-weight: bold; text-align: center;">
+            <th style="padding: 6px; border: 1px solid #000;">الأسبوع</th>
+            <th style="padding: 6px; border: 1px solid #000;">التاريخ (التقويم الوزاري)</th>
+            <th style="padding: 6px; border: 1px solid #000;">الوحدة والدروس المقررة والصفحات</th>
+            <th style="padding: 6px; border: 1px solid #000;">الأهداف السلوكية الإجرائية (أن + الفعل)</th>
+            <th style="padding: 6px; border: 1px solid #000;">استراتيجيات التدريس المعتمدة</th>
+            <th style="padding: 6px; border: 1px solid #000;">الوسائل ومصادر التعلم</th>
+            <th style="padding: 6px; border: 1px solid #000;">أساليب التقويم وأدلة التعلم</th>
+            <th style="padding: 6px; border: 1px solid #000;">الملاحظات والامتحانات</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${fullPlanRows.map((r, i) => `
+            <tr style="background-color: ${r.isReviewWeek ? '#fef3c7' : i % 2 === 0 ? '#ffffff' : '#f0fdf4'}; vertical-align: top;">
+              <td style="padding: 6px; border: 1px solid #ccc; text-align: center; font-weight: bold;">${r.weekNumber}</td>
+              <td style="padding: 6px; border: 1px solid #ccc;">${r.hijriDates}<br/>${r.miladiDates}</td>
+              <td style="padding: 6px; border: 1px solid #ccc;"><strong>${r.unitAndLessons}</strong><br/>${r.pageRange}</td>
+              <td style="padding: 6px; border: 1px solid #ccc;">${r.behavioralObjectives.join('<br/>• ')}</td>
+              <td style="padding: 6px; border: 1px solid #ccc;">${r.strategies.join('<br/>• ')}</td>
+              <td style="padding: 6px; border: 1px solid #ccc;">${r.toolsAndAids.join('<br/>• ')}</td>
+              <td style="padding: 6px; border: 1px solid #ccc;">${r.assessmentAndEvidence.join('<br/>• ')}</td>
+              <td style="padding: 6px; border: 1px solid #ccc; text-align: center;">${r.notesAndExams}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    `;
+
+    const plainHeader = ['الأسبوع', 'التاريخ الهجري والميلادي', 'الوحدة والدروس المقررة', 'الأهداف السلوكية (أن + الفعل)', 'الاستراتيجيات', 'الوسائل ومصادر التعلم', 'أساليب التقويم', 'الملاحظات'].join('\t');
+    const plainBody = fullPlanRows.map(r => [
       r.weekNumber,
       `${r.hijriDates} / ${r.miladiDates}`,
       r.unitAndLessons,
@@ -189,11 +220,28 @@ export const StudyPlanView: React.FC<StudyPlanViewProps> = ({
       r.assessmentAndEvidence.join('; '),
       r.notesAndExams
     ].join('\t')).join('\n');
+    const plainFull = `${plainHeader}\n${plainBody}`;
 
-    navigator.clipboard.writeText(`${header}\n${body}`).then(() => {
+    try {
+      if (typeof ClipboardItem !== 'undefined') {
+        const blobHtml = new Blob([tableHtml], { type: 'text/html' });
+        const blobText = new Blob([plainFull], { type: 'text/plain' });
+        await navigator.clipboard.write([
+          new ClipboardItem({
+            'text/html': blobHtml,
+            'text/plain': blobText
+          })
+        ]);
+      } else {
+        await navigator.clipboard.writeText(plainFull);
+      }
       setCopiedStatus(true);
       setTimeout(() => setCopiedStatus(false), 2500);
-    });
+    } catch {
+      await navigator.clipboard.writeText(plainFull);
+      setCopiedStatus(true);
+      setTimeout(() => setCopiedStatus(false), 2500);
+    }
   };
 
   return (
@@ -219,6 +267,7 @@ export const StudyPlanView: React.FC<StudyPlanViewProps> = ({
             <button
               onClick={() => setIsExportModalOpen(true)}
               className="flex-1 sm:flex-none px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-md hover:shadow-lg transition-all active:scale-95"
+              title="تصدير الخطة كملف وورد قابل للتعديل الكامل في برنامج Word"
             >
               <Download className="w-4 h-4" />
               <span>تصدير وورد (.doc)</span>
@@ -234,11 +283,11 @@ export const StudyPlanView: React.FC<StudyPlanViewProps> = ({
 
             <button
               onClick={handleCopyTable}
-              className="px-3 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-slate-200 font-semibold text-xs flex items-center justify-center gap-1.5 border border-white/20 transition-all"
-              title="نسخ بيانات الخطة كجدول للاكسل"
+              className="px-3.5 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-slate-200 font-bold text-xs flex items-center justify-center gap-1.5 border border-white/20 transition-all active:scale-95"
+              title="نسخ الخطة كجدول جاهز للصق في الوورد أو الإكسل والتعديل عليه مباشرة"
             >
               {copiedStatus ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
-              <span className="hidden sm:inline">{copiedStatus ? 'تم النسخ!' : 'نسخ للإكسل'}</span>
+              <span>{copiedStatus ? 'تم نسخ الجدول!' : 'نسخ للوورد / إكسل'}</span>
             </button>
           </div>
         </div>

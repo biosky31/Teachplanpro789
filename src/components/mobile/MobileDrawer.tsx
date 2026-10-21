@@ -22,6 +22,7 @@ import {
 import { MainTabType } from '../NavigationTabs';
 import { GradeConfig, GradeKey } from '../../types/curriculum';
 import { GRADES_CONFIG } from '../../data/gradesRegistry';
+import { PWAInstallButton } from './PWAInstallButton';
 
 interface MobileDrawerProps {
   isOpen: boolean;
@@ -229,6 +230,11 @@ export const MobileDrawer: React.FC<MobileDrawerProps> = ({
                 </button>
               );
             })}
+          </div>
+
+          {/* Section 2.5: PWA Phone Install Action */}
+          <div className="pt-1">
+            <PWAInstallButton variant="full" />
           </div>
 
           {/* Section 3: Teacher & Intellectual Preparation Rights Card */}

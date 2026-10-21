@@ -11,12 +11,14 @@ import {
   Layers,
   FileCheck,
   CheckCircle2,
-  Bookmark
+  Bookmark,
+  Download
 } from 'lucide-react';
 import { UNITS_EXTRACTED_DATA } from '../data/unitsDetailData';
 import { YEMEN_OFFICIAL_CALENDAR_1447_1448 } from '../data/officialCalendar';
 import { PEDAGOGICAL_GOALS_LIST, PedagogicalGoalItem } from '../data/pedagogicalGoalsBank';
 import { UnitData, GradeConfig } from '../types/curriculum';
+import { generateDailyPrepWordHtml, downloadWordDocument } from '../utils/wordExport';
 
 interface DailyPreparationModalProps {
   isOpen: boolean;
@@ -118,6 +120,40 @@ export const DailyPreparationModal: React.FC<DailyPreparationModalProps> = ({
     setTimeout(() => setIsCopied(false), 2000);
   };
 
+  const handleExportWord = () => {
+    const docHtml = generateDailyPrepWordHtml({
+      schoolName,
+      teacherName,
+      teacherEmail,
+      gradeTitle: activeGradeConfig ? activeGradeConfig.title : 'الصف التاسع الأساسي',
+      unitNumberArabic: unit.unitNumberArabic,
+      unitTitle: unit.title,
+      lessonTitle: readingLesson?.title || unit.title,
+      branch: 'القراءة والمطالعة وتحليل النصوص',
+      sourcePage: readingLesson?.page || unit.pageRange[0],
+      dayName: selectedDay,
+      periodNumber: selectedPeriodNum,
+      periodDuration,
+      timing: timingBreakdown,
+      hijriDate: weekMapping.startDaySaturdayHijri,
+      miladiDate: weekMapping.startDaySaturdayMiladi,
+      behavioralObjectives: [
+        activeGoal.statement,
+        'استيعاب المفاهيم والمضامين القيمية واللغوية في موضوع الدرس.',
+        'القدرة على التطبيق الفعلي للمهارة وحل الأنشطة الصفية بدقة.'
+      ],
+      mainAim: `تحليل واستيعاب ${readingLesson?.title || unit.title} وتطبيق الأهداف السلوكية المقررة.`,
+      strategy: activeGoal.strategy,
+      verificationIndicator: activeGoal.verificationIndicator,
+      appliedTask: activeGoal.appliedTask,
+      differentiationAndSupport: activeGoal.differentiationAndSupport,
+      homework: 'حل التدريبات المقررة ومتابعة كراس المهارات'
+    });
+
+    const fileName = `تحضير_${unit.unitNumberArabic.replace(/\s+/g, '_')}_حصة_${selectedPeriodNum}_${teacherName.replace(/\s+/g, '_')}.doc`;
+    downloadWordDocument(docHtml, fileName);
+  };
+
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/80 backdrop-blur-xs flex items-center justify-center p-2 sm:p-4 animate-fadeIn">
       <div className="bg-white rounded-2xl max-w-5xl w-full shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[96vh]">
@@ -138,6 +174,14 @@ export const DailyPreparationModal: React.FC<DailyPreparationModalProps> = ({
           </div>
 
           <div className="flex items-center gap-1.5">
+            <button
+              onClick={handleExportWord}
+              className="px-2.5 py-1 bg-amber-500 hover:bg-amber-600 rounded-lg text-slate-950 text-xs font-bold flex items-center gap-1 transition-colors shadow-xs"
+              title="تصدير وورد قابل للتعديل"
+            >
+              <Download className="w-3.5 h-3.5" />
+              <span className="hidden xs:inline">وورد (.doc)</span>
+            </button>
             <button
               onClick={handleCopy}
               className="px-2.5 py-1 bg-white/10 hover:bg-white/20 rounded-lg text-white text-xs font-semibold flex items-center gap-1 transition-colors"

@@ -283,3 +283,188 @@ export function downloadWordDocument(htmlContent: string, fileName: string = 'ا
   document.body.removeChild(downloadLink);
   URL.revokeObjectURL(url);
 }
+
+export interface DailyPrepExportData {
+  schoolName: string;
+  governorate?: string;
+  directorate?: string;
+  teacherName: string;
+  teacherEmail?: string;
+  gradeTitle: string;
+  unitNumberArabic: string;
+  unitTitle: string;
+  lessonTitle: string;
+  branch: string;
+  sourcePage: number | string;
+  dayName: string;
+  periodNumber: number;
+  periodDuration: 40 | 35;
+  timing: {
+    warmup: string;
+    activity: string;
+    closure: string;
+    total: string;
+  };
+  hijriDate: string;
+  miladiDate: string;
+  behavioralObjectives: string[];
+  mainAim: string;
+  strategy: string;
+  verificationIndicator: string;
+  appliedTask: string;
+  differentiationAndSupport: string;
+  homework?: string;
+}
+
+export function generateDailyPrepWordHtml(data: DailyPrepExportData): string {
+  const primaryColor = '#065f46';
+  const lightBg = '#f0fdf4';
+
+  return `
+    <html xmlns:o="urn:schemas-microsoft-com:office:office" 
+          xmlns:w="urn:schemas-microsoft-com:office:word" 
+          xmlns="http://www.w3.org/TR/REC-html40">
+      <head>
+        <meta charset="utf-8">
+        <title>كراس التحضير اليومي - ${data.lessonTitle}</title>
+        <!--[if gte mso 9]>
+        <xml>
+          <w:WordDocument>
+            <w:View>Print</w:View>
+            <w:Zoom>100</w:Zoom>
+            <w:DoNotOptimizeForBrowser/>
+          </w:WordDocument>
+        </xml>
+        <![endif]-->
+        <style>
+          @page {
+            size: A4 portrait;
+            margin: 1.5cm 1.2cm 1.5cm 1.2cm;
+            mso-page-orientation: portrait;
+          }
+          body {
+            font-family: 'Cairo', 'Traditional Arabic', 'Amiri', Arial, sans-serif;
+            direction: rtl;
+            text-align: right;
+            margin: 0;
+            padding: 0;
+            background-color: #ffffff;
+            color: #0f172a;
+          }
+          table {
+            border-collapse: collapse;
+            width: 100%;
+          }
+          th, td {
+            mso-line-height-rule: exactly;
+            padding: 6px 8px;
+            font-size: 10pt;
+          }
+        </style>
+      </head>
+      <body>
+        <!-- Header -->
+        <table dir="rtl" style="margin-bottom: 12px; border-bottom: 2px solid ${primaryColor};">
+          <tr>
+            <td style="width: 33%; vertical-align: top; font-size: 10.5pt;">
+              <strong>الجمهورية اليمنية</strong><br/>
+              وزارة التربية والتعليم والبحث العلمي<br/>
+              مكتب التربية بمحافظة: ${data.governorate || 'أمانة العاصمة'}<br/>
+              مدرسة: <u>${data.schoolName || 'مدرسة إشراق اليمن'}</u>
+            </td>
+            <td style="width: 34%; text-align: center; vertical-align: middle;">
+              <h2 style="margin: 0; color: ${primaryColor}; font-size: 15pt;">كراس التحضير اليومي النموذجي</h2>
+              <h3 style="margin: 3px 0; color: #1e293b; font-size: 12pt;">مادة: لغتي العربية — ${data.gradeTitle}</h3>
+              <p style="margin: 2px 0; color: #b45309; font-size: 9.5pt; font-weight: bold;">توزيع زمني: ${data.periodDuration} دقيقة (أطول حصة)</p>
+            </td>
+            <td style="width: 33%; text-align: left; vertical-align: top; font-size: 9.5pt;">
+              <strong>إعداد المعلم:</strong> ${data.teacherName}<br/>
+              <strong>البريد:</strong> ${data.teacherEmail || 'BIOSKY30@gmail.com'}<br/>
+              <strong>التاريخ الهجري:</strong> ${data.hijriDate}<br/>
+              <strong>التاريخ الميلادي:</strong> ${data.miladiDate}
+            </td>
+          </tr>
+        </table>
+
+        <!-- Lesson Meta Info Grid -->
+        <table dir="rtl" style="border: 1px solid #cbd5e1; margin-bottom: 12px;">
+          <tr style="background-color: ${lightBg};">
+            <td style="border: 1px solid #cbd5e1; width: 25%;"><strong>الوحدة التعليمية:</strong></td>
+            <td style="border: 1px solid #cbd5e1; width: 25%;">${data.unitNumberArabic}: ${data.unitTitle}</td>
+            <td style="border: 1px solid #cbd5e1; width: 25%;"><strong>اليوم والحصة:</strong></td>
+            <td style="border: 1px solid #cbd5e1; width: 25%;">${data.dayName} (الحصة ${data.periodNumber})</td>
+          </tr>
+          <tr>
+            <td style="border: 1px solid #cbd5e1;"><strong>موضوع الدرس:</strong></td>
+            <td style="border: 1px solid #cbd5e1;"><strong>${data.lessonTitle}</strong></td>
+            <td style="border: 1px solid #cbd5e1;"><strong>الفرع والصفحة:</strong></td>
+            <td style="border: 1px solid #cbd5e1;">${data.branch} (ص: ${data.sourcePage})</td>
+          </tr>
+          <tr style="background-color: #f8fafc;">
+            <td style="border: 1px solid #cbd5e1;"><strong>التوقيت (${data.periodDuration} دقيقة):</strong></td>
+            <td style="border: 1px solid #cbd5e1;" colspan="3">
+              التمهيد والتهيئة: <strong>${data.timing.warmup}</strong> | 
+              العرض والأنشطة: <strong>${data.timing.activity}</strong> | 
+              التقويم والغلق: <strong>${data.timing.closure}</strong>
+            </td>
+          </tr>
+        </table>
+
+        <!-- Main Preparation Body -->
+        <table dir="rtl" style="border: 1px solid #cbd5e1; margin-bottom: 14px;">
+          <tr style="background-color: ${primaryColor}; color: #ffffff; font-weight: bold; text-align: center;">
+            <th style="border: 1px solid #0f172a; width: 35%; padding: 8px;">الأهداف السلوكية الإجرائية (أن + الفعل)</th>
+            <th style="border: 1px solid #0f172a; width: 35%; padding: 8px;">الأنشطة والمهام التطبيقية ومجريات الدرس</th>
+            <th style="border: 1px solid #0f172a; width: 30%; padding: 8px;">أساليب التقويم ومؤشرات التحقق</th>
+          </tr>
+          <tr style="vertical-align: top;">
+            <td style="border: 1px solid #cbd5e1; padding: 10px; font-size: 9.5pt;">
+              <p style="margin-top: 0; font-weight: bold; color: ${primaryColor};">الهدف الأساسي للحصة:</p>
+              <p style="margin-bottom: 8px;">${data.mainAim}</p>
+              <p style="margin-top: 8px; font-weight: bold; color: ${primaryColor};">المخرجات السلوكية التفصيلية:</p>
+              <ul style="margin: 0; padding-right: 18px; line-height: 1.5;">
+                ${data.behavioralObjectives.map(obj => `<li>${obj}</li>`).join('')}
+              </ul>
+            </td>
+            <td style="border: 1px solid #cbd5e1; padding: 10px; font-size: 9.5pt;">
+              <p style="margin-top: 0; font-weight: bold; color: #b45309;">استراتيجية التدريس المعتمدة:</p>
+              <p style="margin-bottom: 8px;"><strong>${data.strategy}</strong></p>
+              <p style="margin-top: 8px; font-weight: bold; color: #b45309;">المهام والأنشطة الصفية:</p>
+              <p style="margin-bottom: 8px;">${data.appliedTask}</p>
+              <p style="margin-top: 8px; font-weight: bold; color: #b45309;">مراعاة الفروق الفردية والدعم:</p>
+              <p style="margin: 0;">${data.differentiationAndSupport}</p>
+            </td>
+            <td style="border: 1px solid #cbd5e1; padding: 10px; font-size: 9.5pt;">
+              <p style="margin-top: 0; font-weight: bold; color: #1e3a8a;">مؤشر تحقق الهدف:</p>
+              <p style="margin-bottom: 8px;">${data.verificationIndicator}</p>
+              <p style="margin-top: 8px; font-weight: bold; color: #1e3a8a;">الواجب والتكليف المنزلي:</p>
+              <p style="margin: 0;">${data.homework || 'حل التدريبات المقررة ومتابعة كراس المهارات'}</p>
+            </td>
+          </tr>
+        </table>
+
+        <!-- Signatures Footer -->
+        <table dir="rtl" style="margin-top: 20px;">
+          <tr>
+            <td style="width: 33%; text-align: center;">
+              <strong>معلم المادة:</strong><br/><br/>
+              ${data.teacherName}<br/>
+              التوقيع: .....................
+            </td>
+            <td style="width: 34%; text-align: center;">
+              <strong>الموجه التربوي المختص:</strong><br/><br/>
+              .....................<br/>
+              التوقيع: .....................
+            </td>
+            <td style="width: 33%; text-align: center;">
+              <strong>مدير المدرسة:</strong><br/><br/>
+              .....................<br/>
+              الختم والتوقيع: .....................
+            </td>
+          </tr>
+        </table>
+      </body>
+    </html>
+  `;
+}
+

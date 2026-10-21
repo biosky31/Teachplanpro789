@@ -13,6 +13,7 @@ import { OfficialCalendarAndGoalsView } from './components/OfficialCalendarAndGo
 import { DailyPreparationModal } from './components/DailyPreparationModal';
 import { DailyPreparationView } from './components/DailyPreparationView';
 import { GradeStandbyPortal } from './components/GradeStandbyPortal';
+import { OfflineIndicator } from './components/OfflineIndicator';
 import { UNITS_EXTRACTED_DATA } from './data/unitsDetailData';
 import { GRADES_CONFIG, getIsolatedGradeData } from './data/gradesRegistry';
 import { GradeKey } from './types/curriculum';
@@ -185,6 +186,9 @@ export default function App() {
         unitsData={isolatedData.units}
         activeGradeConfig={activeGradeConfig}
       />
+
+      {/* 8. Offline Connectivity Indicator */}
+      <OfflineIndicator />
     </div>
   );
 }

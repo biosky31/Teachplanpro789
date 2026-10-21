@@ -22,12 +22,14 @@ import {
   Target,
   Users,
   Compass,
-  FileText
+  FileText,
+  Download
 } from 'lucide-react';
 import { UNITS_EXTRACTED_DATA } from '../data/unitsDetailData';
 import { YEMEN_OFFICIAL_CALENDAR_1447_1448 } from '../data/officialCalendar';
 import { PEDAGOGICAL_GOALS_LIST } from '../data/pedagogicalGoalsBank';
 import { UnitData, GradeConfig } from '../types/curriculum';
+import { generateDailyPrepWordHtml, downloadWordDocument } from '../utils/wordExport';
 
 interface DailyPreparationViewProps {
   initialUnitId?: number;
@@ -185,6 +187,40 @@ export const DailyPreparationView: React.FC<DailyPreparationViewProps> = ({
     setTimeout(() => setIsCopied(false), 2000);
   };
 
+  const handleExportWord = () => {
+    const docHtml = generateDailyPrepWordHtml({
+      schoolName,
+      teacherName,
+      teacherEmail,
+      gradeTitle: activeGradeConfig ? activeGradeConfig.title : 'الصف التاسع الأساسي',
+      unitNumberArabic: unit.unitNumberArabic,
+      unitTitle: unit.title,
+      lessonTitle: periodDetails.title,
+      branch: periodDetails.branch,
+      sourcePage: periodDetails.sourcePage,
+      dayName: selectedDay,
+      periodNumber: selectedPeriodNum,
+      periodDuration,
+      timing: timingBreakdown,
+      hijriDate: weekMapping.startDaySaturdayHijri,
+      miladiDate: weekMapping.startDaySaturdayMiladi,
+      behavioralObjectives: [
+        activeGoal.statement,
+        'استيعاب المفاهيم والمضامين القيمية واللغوية الواردة في موضوع الدرس.',
+        'القدرة على التطبيق الفعلي للمهارة وحل الأنشطة والتدريبات الصفية بدقة.'
+      ],
+      mainAim: periodDetails.mainAim,
+      strategy: activeGoal.strategy,
+      verificationIndicator: activeGoal.verificationIndicator,
+      appliedTask: activeGoal.appliedTask,
+      differentiationAndSupport: activeGoal.differentiationAndSupport,
+      homework: 'حل التدريبات المقررة في الكتاب ومتابعة كراس الواجبات'
+    });
+
+    const fileName = `تحضير_${unit.unitNumberArabic.replace(/\s+/g, '_')}_حصة_${selectedPeriodNum}_${teacherName.replace(/\s+/g, '_')}.doc`;
+    downloadWordDocument(docHtml, fileName);
+  };
+
   const handlePrevUnit = () => {
     const currentIndex = data.findIndex(u => u.id === selectedUnitId);
     if (currentIndex > 0) {
@@ -286,10 +322,19 @@ export const DailyPreparationView: React.FC<DailyPreparationViewProps> = ({
           <button
             onClick={handleCopy}
             className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold flex items-center gap-1.5 transition-all border border-slate-200"
-            title="نسخ نص التحضير كاملاً"
+            title="نسخ نص التحضير كاملاً للتعديل في أي برنامج"
           >
             {isCopied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5 text-slate-500" />}
             <span>{isCopied ? 'تم النسخ!' : 'نسخ الخطة'}</span>
+          </button>
+
+          <button
+            onClick={handleExportWord}
+            className="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 text-xs font-extrabold flex items-center gap-1.5 shadow-xs transition-all active:scale-95"
+            title="تصدير كراس التحضير كملف وورد قابل للتعديل الكامل"
+          >
+            <Download className="w-3.5 h-3.5" />
+            <span>تصدير وورد (.doc)</span>
           </button>
 
           <button
