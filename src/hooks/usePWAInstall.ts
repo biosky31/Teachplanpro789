@@ -9,6 +9,9 @@ export function usePWAInstall() {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [isInstalled, setIsInstalled] = useState(false);
   const [isIOS, setIsIOS] = useState(false);
+  const [isSamsung, setIsSamsung] = useState(false);
+  const [isOpera, setIsOpera] = useState(false);
+  const [isInIframe, setIsInIframe] = useState(false);
 
   useEffect(() => {
     // Detect standalone mode (already installed or running as standalone web app)
@@ -18,11 +21,22 @@ export function usePWAInstall() {
         (window.navigator as unknown as { standalone?: boolean }).standalone === true);
     setIsInstalled(isStandalone);
 
-    // Detect iOS devices (iPhone, iPad, iPod)
+    // Detect if running inside iframe (e.g. preview environment where native prompt is restricted)
+    try {
+      setIsInIframe(typeof window !== 'undefined' && window.self !== window.top);
+    } catch {
+      setIsInIframe(true);
+    }
+
     if (typeof window !== 'undefined' && window.navigator) {
-      const userAgent = window.navigator.userAgent.toLowerCase();
-      const isIOSDevice = /iphone|ipad|ipod/.test(userAgent) && !/windows|android/.test(userAgent);
-      setIsIOS(isIOSDevice);
+      const ua = window.navigator.userAgent.toLowerCase();
+      const operaDetected = /opr\/|opera/i.test(ua);
+      const samsungDetected = /samsungbrowser/i.test(ua);
+      const iosDetected = /iphone|ipad|ipod/.test(ua) && !/windows|android/.test(ua);
+
+      setIsOpera(operaDetected);
+      setIsSamsung(samsungDetected);
+      setIsIOS(iosDetected);
     }
 
     const handleBeforeInstallPrompt = (e: Event) => {
@@ -64,6 +78,9 @@ export function usePWAInstall() {
     isInstallable: !!deferredPrompt,
     isInstalled,
     isIOS,
+    isSamsung,
+    isOpera,
+    isInIframe,
     install,
   };
 }
